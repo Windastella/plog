@@ -46,17 +46,17 @@ class Plog
     public static function route()
     {
         try{
-            if (preg_match('#^/(\d+)/(\d+)/(\d+)/(\w+)/?$#', $_SERVER['REQUEST_URI'], $matches)) {
+            if (preg_match('/(\d+)\/(\d+)\/(\d+)\/(\w+)/', $_SERVER['REQUEST_URI'], $matches)) {
                 self::read("content/$matches[1]-$matches[2]-$matches[3]-$matches[4].md");
-            } elseif (preg_match('#^/(\d+)/(\d+)/(\d+)/?$#', $_SERVER['REQUEST_URI'], $matches)) {
+            } elseif (preg_match('/(\d+)\/(\d+)\/(\d+)/', $_SERVER['REQUEST_URI'], $matches)) {
                 self::list($matches);
-            } elseif (preg_match('#^/(\d+)/(\d+)/?$#', $_SERVER['REQUEST_URI'], $matches)) {
+            } elseif (preg_match('/(\d+)\/(\d+)/', $_SERVER['REQUEST_URI'], $matches)) {
                 self::list($matches);
-            } elseif (preg_match('#^/(\d+)/?$#', $_SERVER['REQUEST_URI'], $matches)) {
-                self::list($matches);
-            } elseif (preg_match('#^/webhook$#', $_SERVER['REQUEST_URI'])) {
+            } elseif (preg_match('/webhook/', $_SERVER['REQUEST_URI'])) {
                 self::hook();
-            } elseif (preg_match('#^/?$#', $_SERVER['REQUEST_URI'])) {
+            } elseif (preg_match('/(\d+)/', $_SERVER['REQUEST_URI'], $matches)) {
+                self::list($matches);
+            } elseif (preg_match('/\//', $_SERVER['REQUEST_URI'])) {
                 self::read('page/welcome.php');
             } else {
                 throw new Exception('Not Found'); 
@@ -106,16 +106,17 @@ class Plog
 
         if (isset($_GET['secret']) && $_GET['secret'] === $CONFIG['webhook']['secret']) {
             foreach ($CONFIG['webhook']['commands'] as $command) {
-                exec($command, $dummy, $status);
-                if ($status) {
+                $out = exec($command." 2>&1", $output, $status);
+                
+                echo json_encode($output);
+
+                if (!$status) {
                     break;
                 }
             }
-            file_put_contents($LOG_FILE, date('[Y-m-d H:i:s]').' '.$_SERVER['REMOTE_ADDR']." : valid access\n", FILE_APPEND | LOCK_EX);
-        } else {
-            file_put_contents($LOG_FILE, date('[Y-m-d H:i:s]').' '.$_SERVER['REMOTE_ADDR']." : invalid access\n", FILE_APPEND | LOCK_EX);
         }
-        exit;
+
+        exit();
     }
 }
 ?>
