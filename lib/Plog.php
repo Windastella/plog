@@ -30,7 +30,8 @@ class Plog
     private static $content = '';
     public static function root()
     {
-        return str_replace($_SERVER['PATH_INFO'],'',$_SERVER['REQUEST_URI']);
+        global $CONFIG;
+        return $CONFIG['general']['homepage'];
     }
     public static function content()
     {
@@ -44,22 +45,27 @@ class Plog
     }
     public static function route()
     {
-        if (preg_match('#^/(\d+)/(\d+)/(\d+)/[^/]+/?$#', $_SERVER['PATH_INFO'], $matches)) {
-            self::read("content/$matches[1]-$matches[2]-$matches[3]-$matches[4].md");
-        } elseif (preg_match('#^/(\d+)/(\d+)/(\d+)/?$#', $_SERVER['PATH_INFO'], $matches)) {
-            self::list($matches);
-        } elseif (preg_match('#^/(\d+)/(\d+)/?$#', $_SERVER['PATH_INFO'], $matches)) {
-            self::list($matches);
-        } elseif (preg_match('#^/(\d+)/?$#', $_SERVER['PATH_INFO'], $matches)) {
-            self::list($matches);
-        } elseif (preg_match('#^/webhook$#', $_SERVER['PATH_INFO'])) {
-            self::hook();
-        } elseif (preg_match('#^/?$#', $_SERVER['PATH_INFO'])) {
-            self::read('page/welcome.php');
-        } else {
+        try{
+            if (preg_match('#^/(\d+)/(\d+)/(\d+)/(\w+)/?$#', $_SERVER['REQUEST_URI'], $matches)) {
+                self::read("content/$matches[1]-$matches[2]-$matches[3]-$matches[4].md");
+            } elseif (preg_match('#^/(\d+)/(\d+)/(\d+)/?$#', $_SERVER['REQUEST_URI'], $matches)) {
+                self::list($matches);
+            } elseif (preg_match('#^/(\d+)/(\d+)/?$#', $_SERVER['REQUEST_URI'], $matches)) {
+                self::list($matches);
+            } elseif (preg_match('#^/(\d+)/?$#', $_SERVER['REQUEST_URI'], $matches)) {
+                self::list($matches);
+            } elseif (preg_match('#^/webhook$#', $_SERVER['REQUEST_URI'])) {
+                self::hook();
+            } elseif (preg_match('#^/?$#', $_SERVER['REQUEST_URI'])) {
+                self::read('page/welcome.php');
+            } else {
+                throw new Exception('Not Found'); 
+            }
+        }catch(Exception $e){
             header('HTTP/1.1 404 Not Found');
             self::read('page/404.php');
         }
+
     }
     private static function list($matches)
     {
@@ -86,12 +92,18 @@ class Plog
             preg_match('/\d+-\d+-\d+/', $filename, $matches);
             self::$content .= '<article>';
             self::$content .= "<time>$matches[0]</time>";
-            self::$content .= (new GithubMarkdown())->parse(file_get_contents($filename));
+            if($file = @file_get_contents($filename)){
+                self::$content .= (new GithubMarkdown())->parse($file);
+            }else {
+                throw new Exception("Cannot access '$filename' to read contents.");
+            }
             self::$content .= '</article>';
         }
     }
     private static function hook()
     {
+        global $CONFIG;
+
         if (isset($_GET['secret']) && $_GET['secret'] === $CONFIG['webhook']['secret']) {
             foreach ($CONFIG['webhook']['commands'] as $command) {
                 exec($command, $dummy, $status);
