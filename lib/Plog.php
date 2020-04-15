@@ -65,7 +65,7 @@ class Plog
                 self::read($filename);
             }
         } else {
-            self::read('content/404.php');
+            self::read('page/404.php');
         }
     }
     private static function read($filename)
