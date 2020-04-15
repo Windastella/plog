@@ -15,12 +15,15 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+
+use \cebe\markdown\GithubMarkdown;
+
 $filenames = array_reverse(glob('content/*.md'));
 for ($i = 0; $i < min(3, count($filenames)); ++$i) {
     preg_match('/\d+-\d+-\d+/', $filenames[$i], $matches);
     $content = '<article>';
     $content .= "<time>$matches[0]</time>";
-    $content .= Parsedown::instance()->text(file_get_contents($filenames[$i]));
+    $content .= (new GithubMarkdown())->parse(file_get_contents($filenames[$i]));
     $content .= '</article>';
     echo $content;
 }

@@ -2,7 +2,7 @@
 /* 
  * This file is part of the plog.
  * Copyright (c) 2017 TANIGUCHI Masaya.
- * 
+ * Modified 2020 NIK MiRZA
  * This program is free software: you can redistribute it and/or modify  
  * it under the terms of the GNU General Public License as published by  
  * the Free Software Foundation, version 3.
@@ -15,8 +15,16 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-require 'lib/Parsedown.php';
+use \cebe\markdown\GithubMarkdown;
+
 $CONFIG = parse_ini_file('plog.ini', true);
+
+if($CONFIG['general']['env'] != 'productio'){
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+}
+
 class Plog
 {
     private static $content = '';
@@ -78,7 +86,7 @@ class Plog
             preg_match('/\d+-\d+-\d+/', $filename, $matches);
             self::$content .= '<article>';
             self::$content .= "<time>$matches[0]</time>";
-            self::$content .= Parsedown::instance()->text(file_get_contents($filename));
+            self::$content .= (new GithubMarkdown())->parse(file_get_contents($filename));
             self::$content .= '</article>';
         }
     }

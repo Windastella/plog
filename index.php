@@ -1,4 +1,5 @@
 <?php 
+    require 'vendor/autoload.php';
     require 'lib/Plog.php'; 
 ?>
 
@@ -9,7 +10,7 @@
     <meta charset="utf-8">
     <title><?php echo Plog::title().' - '.$CONFIG['general']['title'] ?></title>
     <link rel="stylesheet"
-          href="<?php echo Plog::root() ?>/node_modules/bootstrap/dist/bootstrap.min.css">
+          href="<?php echo Plog::root() ?>/node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet"
           href="<?php echo Plog::root() ?>/node_modules/bootswatch/dist/<?php echo $CONFIG['page']['theme'] ?>/bootstrap.min.css">
   </head>

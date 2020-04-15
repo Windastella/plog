@@ -1,2 +1,6 @@
+vendor
 node_modules
 plog.ini
+
+package-lock.json
+composer.lock
