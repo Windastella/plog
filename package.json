@@ -1,0 +1,35 @@
+{
+  "name": "plog",
+  "version": "1.0.0",
+  "description": "Simple markdown based blog engine.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "bootstrap": "^4.4.1",
+    "bootswatch": "^4.4.1",
+    "jquery": "^3.5.0",
+    "popper.js": "^1.16.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fgborges/plog.git"
+  },
+  "keywords": [
+    "blog",
+    "php",
+    "markdown",
+    "md"
+  ],
+  "author": "Nik Mirza",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/fgborges/plog/issues"
+  },
+  "homepage": "https://github.com/fgborges/plog#readme"
+}
