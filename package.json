@@ -1,6 +1,6 @@
 {
   "name": "plog",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Less Simple markdown based blog engine.",
   "dependencies": {
     "bootstrap": "^4.4.1",
